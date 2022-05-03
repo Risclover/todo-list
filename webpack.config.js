@@ -1,5 +1,6 @@
 const path = require('path');
-		
+var webpack = require("webpack");
+
 module.exports = {
     entry: './src/modules/index.js',
     output: {
@@ -14,4 +15,14 @@ module.exports = {
             },
         ],
     },
+    externals: {
+        jquery: 'jQuery',
+        "jquery-ui": "jquery-ui/jquery-ui.js", 
+    },
+    plugins: [
+        new webpack.ProvidePlugin({
+            $: "jquery",
+            jQuery: "jquery"
+        })
+     ],
 };
