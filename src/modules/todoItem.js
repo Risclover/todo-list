@@ -1,86 +1,97 @@
-const todoItem = (() => {
+import {projectList, setFirstProject} from './projects';
+
+const todoItems = (() => {
     const text = document.getElementById('todo-input');
     const submitBtn = document.getElementById('submit');
     const listBox = document.querySelector('.todo-list');
-    const defaultIcon = document.getElementById('default-icon');
-    const bgColor = document.getElementById('bg-color');
-    const todoBody = document.querySelector('.todo-body');
-    const title = document.querySelector('.app-title');
-    const fontColor = document.getElementById('font-color');
-    const headerBg = document.getElementById('header-bg');
-    const headerFont = document.getElementById('header-font');
-    const icons = document.querySelectorAll('button');
+    const projectMenu = document.getElementById('project-menu');
+    const projectTitle = document.querySelector('.project-name');
     const appTitle = document.querySelector('.app-title');
-    const projectName = document.getElementById('project-name');
-    const header = document.querySelector('.header');
-    const headerTop = document.querySelector('.header-top');
     const firstProject = document.getElementById('first-project');
-
-    defaultIcon.addEventListener('click', defaultMenu);
+    
+    projectMenu.addEventListener('click', projectSettings);
+    projectTitle.addEventListener('click', changeName);
     submitBtn.addEventListener('click', submitClick);
     text.addEventListener('keydown', function(e) {
         if(e.key === 'Enter') {
             submitClick();
         }
     });
-
-    let todoArray = [];
-    let colorsObj = {
-        bgCol: '#ffffff',
-        fontCol: '#000000',
-        headerFontCol: '#000000',
-        headerCol: '#ffffff',
-        projectName: 'Default'
-    };
-
-    let bgColorVal = "";
-    let fontColorVal = "";
-    let headerBgVal = "";
-    let headerFontVal = "";
     
-    function defaultMenu() {
+    let todoArray = [];
+    let projectName = "";
+
+    
+    function projectSettings() {
         $("#default").dialog({
             buttons: [
                 {
-                    text: 'Clear Items',
+                    text: "Restore default",
                     click: function() {
+                        $("#default-check").dialog({
+                            buttons: [
+                                {
+                                    text: "Continue",
+                                    click: function() {
+                                        $(this).dialog("close");
+                                        localStorage.clear();
+                                    }
+                                },
+                                {
+                                    text: "Nevermind",
+                                    click: function() {
+                                        $(this).dialog("close");
+                                    }
+                                }
+                            ]
+                        })
                         $(this).dialog("close");
-                        defaultCheck();
                     }
                 },
                 {
-                    text: 'Save',
+                    text: "Change project theme",
                     click: function() {
-                        $( this ).dialog( "close" );
-                        const newTitle = projectName.value;
-                        todoBody.style.backgroundColor = `${bgColor.value}`;
-                        console.log(bgColor.value);
-                        header.style.backgroundColor = `${headerBg.value}`;
-                        headerTop.style.color = `${headerFont.value}`;
-                        todoBody.style.color = `${fontColor.value}`;
-                        title.style.color = `${fontColor.value}`;
-                        icons.forEach(icon => {
-                            icon.style.color = `${fontColor.value}`;
+                        $(this).dialog("close");
+                        $("#theme").dialog({
+    
                         })
-                        bgColorVal = `${bgColor.value}`;
-                        fontColorVal = `${fontColor.value}`;
-                        headerFontVal = `${headerFont.value}`;
-                        headerBgVal = `${headerBg.value}`;
-                        colorsObj = {
-                            bgCol: bgColorVal,
-                            fontCol: fontColorVal,
-                            headerFontCol: headerFontVal,
-                            headerCol: headerBgVal,
-                            projectName: newTitle
-                        }
-                        appTitle.textContent = colorsObj.projectName;
-                        firstProject.textContent = colorsObj.projectName;
-                        renderColor();
+                    }
+                },
+                {
+                    text: "Save changes",
+                    click: function() {
+                        $(this).dialog("close");
+                        renderChanges();
                     }
                 }
             ]
-        });
+        })
     }
+    
+    function changeName() {
+        const newTitle = document.getElementById('new-title');
+        newTitle.style.display = 'block';
+        appTitle.style.display = 'none';
+        newTitle.value = appTitle.textContent;
+        newTitle.focus();
+    
+        newTitle.addEventListener('blur', function() {
+            appTitle.textContent = newTitle.value;
+            appTitle.style.display = 'block';
+            newTitle.style.display = 'none';
+            renderName();
+        })
+    
+        newTitle.addEventListener('keydown', function(e) {
+            if(e.key === 'Enter') {
+                appTitle.textContent = newTitle.value;
+                appTitle.style.display = 'block';
+                newTitle.style.display = 'none';
+                renderName();
+            }
+        })
+    }
+    
     function defaultCheck() {
         $("#default-check").dialog({
             buttons: [
@@ -116,7 +127,7 @@ const todoItem = (() => {
         todoArray.push(todo);
         renderTodo(todo);
     }
-
+    
     function submitClick() {
         const task = text.value.trim();
         if(task !== '') {
@@ -129,7 +140,7 @@ const todoItem = (() => {
     
     function renderTodo(todo) {
         localStorage.setItem('todo', JSON.stringify(todoArray));
-
+    
         const item = document.querySelector(`[data-key='${todo.id}']`);
     
         if(todo.deleted) {
@@ -143,71 +154,70 @@ const todoItem = (() => {
         node.setAttribute('class', `flag-high todo-item ${isChecked}`);
         node.innerHTML = `
         <div class="total-todo">
-            <div class="todo-one">
-                <input id="${todo.id}" type="checkbox" />
-                <label for="${todo.id}" class="tick js-tick"></label>
-                <span class="js-todo">${todo.text}</span>
-                <input id="${todo.id}" type="hidden" />
+            <div class="left-side">
+                <div class="checkbox">
+                    <input id="${todo.id}" type="checkbox" />
+                    <label for="${todo.id}" class="tick js-tick"></label>
+                </div>
+                <div class="todo-main">
+                    <span class="js-todo">${todo.text}</span>
+                    <input id="${todo.id}" type="hidden" />
+                    <div class="todo-extras"></div>
+                </div>
             </div>
-            <div class="todo-two">
-                <button class="js-delete-todo icon"><i class="fa-regular fa-trash-can js-delete-todo"></i></button>
-                <button class="js-edit icon"><i class="fa-solid fa-pen-to-square fa-1x"></i></button>
+            <div class="end-buttons">
+                <div class="todo-btns">
+                    <button class="js-delete-todo icon"><i class="fa-regular fa-trash-can js-delete-todo"></i></button>
+                    <button class="js-edit icon"><i class="fa-solid fa-pen-to-square fa-1x"></i></button>
+                </div>
+                <div class="todo-date">${todo.dueDate}</div>
             </div>
         </div>
-        <div class="todo-extras"></div>
         `;
-
+    
         if(item) {
             listBox.replaceChild(node, item);
         } else {
             listBox.append(node);
         }
-
+    
         const todoExtras = document.querySelectorAll('.todo-extras');
-
+    
         todoExtras.forEach((extra) => {
-            const itemKey = extra.parentElement.dataset.key;
+            const itemKey = extra.parentElement.parentElement.parentElement.parentElement.dataset.key;
             const index = todoArray.findIndex(item => item.id === Number (itemKey));
             extra.innerHTML = `<span>${todoArray[index].notes}</span>`;
+            if(todoArray[index].notes === '') {
+                extra.classList.add('hide');
+            } else {
+                extra.classList.remove('hide');
+            }
         })
+        
     }
-
-    function renderColor() {
-        localStorage.setItem('colors', JSON.stringify(colorsObj));
-        appTitle.textContent = colorsObj.projectName;
-        firstProject.textContent = colorsObj.projectName;
-        console.log(colorsObj);
-        todoBody.style.backgroundColor = colorsObj.bgCol;
-        console.log(bgColor.value);
-        header.style.backgroundColor = colorsObj.headerCol;
-        headerTop.style.color = colorsObj.headerFontCol;
-        todoBody.style.color = colorsObj.fontCol;
-        title.style.color = colorsObj.fontCol;
-        icons.forEach(icon => {
-            icon.style.color = colorsObj.fontCol;
-        })
-        fontColor.value = colorsObj.fontCol;
-        bgColor.value = colorsObj.bgCol;
-        headerBg.value = colorsObj.headerCol;
-        headerFont.value = colorsObj.headerFontCol;
-        projectName.value = colorsObj.projectName;
-    }
-
+    
     listBox.addEventListener('click', event => {
         if(event.target.classList.contains('js-tick')) {
-            const itemKey = event.target.parentElement.parentElement.parentElement.dataset.key;
+            const itemKey = event.target.parentElement.parentElement.parentElement.parentElement.dataset.key;
             toggleDone(itemKey);
         }
     
         if(event.target.classList.contains('js-delete-todo')) {
-            const itemKey = event.target.parentElement.parentElement.parentElement.dataset.key;
+            const itemKey = event.target.parentElement.parentElement.parentElement.parentElement.dataset.key;
             deleteTodo(itemKey);
         }
-
-        if(event.target.classList.contains('js-todo')) {
+    
+        if(event.target.classList.contains('todo-main')) {
+            const totalTodo = event.target.parentElement.parentElement;
+            if(event.target.children[1].focus()) {
+                totalTodo.style.backgroundColor = '#f0f0f0d7';
+            }
             const itemKey = event.target.parentElement.parentElement.parentElement.dataset.key;
-            const newInput = event.target.parentElement.children[3];
-            const oldSpan = event.target.parentElement.children[2];
+            const newInput = event.target.children[1];
+            const oldSpan = event.target.children[0];
+            newInput.addEventListener('focus', (e) => {
+                e.target.parentElement.parentElement.parentElement.style.backgroundColor = '#f7f7f7d7';
+            })
             oldSpan.classList.add('hide');
             newInput.classList.add('newinput');
             newInput.classList.add('show');
@@ -236,15 +246,19 @@ const todoItem = (() => {
                 renderTodo(todoArray[index]);
             })
         }
-
+    
         if(event.target.classList.contains('js-edit')) {
-            const itemKey = event.target.parentElement.parentElement.parentElement.dataset.key;
+            const todoText = document.querySelector('#todo-text');
+            const inValid = document.createElement('span');
+            inValid.classList.add('invalid-red');
+            $(".invalid-red").text("");
+            const itemKey = event.target.parentElement.parentElement.parentElement.parentElement.dataset.key;
             const index = todoArray.findIndex(item => item.id === Number(itemKey));
             const todoNotes = document.getElementById('todo-notes');
             const datePicker = document.getElementById('datepicker');
             const todoTitle = document.getElementById('todo-text');
             const selected = document.getElementById('todo-priority');
-            const oldSpan = event.target.parentElement.parentElement.children[0].children[2];
+            const oldSpan = event.target.parentElement.parentElement.parentElement.parentElement.children[0].children[0].children[1].children[0];
             todoTitle.value = oldSpan.textContent;
             selected.value = todoArray[index].priority;
             datePicker.value = todoArray[index].dueDate;
@@ -255,16 +269,27 @@ const todoItem = (() => {
                     {
                         text: 'Save',
                         click: function() {
+                            $(".invalid-red").remove();
+                            $(".ui-dialog-buttonpane").append(inValid);
                             oldSpan.textContent = todoTitle.value;
-                            $( this ).dialog( "close" );
                             todoArray[index].text = oldSpan.textContent;
                             todoArray[index].priority = selected.value;
                             todoArray[index].dueDate = datePicker.value;
                             todoArray[index].notes = todoNotes.value;
-                            const todoExtras = event.target.parentElement.parentElement.parentElement.children[1];
+                            const todoExtras = event.target.parentElement.parentElement.parentElement.parentElement.children[0].children[0].children[1].children[2];
                             todoExtras.innerHTML = `<span>${todoArray[index].notes}</span>`;
-                            console.log(todoArray[index]);
+                            if(todoNotes.value === '') {
+                                todoExtras.classList.add('hide');
+                            } else {
+                                todoExtras.classList.remove('hide');
+                            }
                             renderTodo(todoArray[index]);
+                            if(todoText.value === "") {
+                                $(".invalid-red").text("Error: Can't leave title blank.");
+                            } else if (todoText.value !== "") {
+                                $(".invalid-red").remove();
+                                $(this).dialog("close");
+                            }
                         }
                     }
                 ]
@@ -293,7 +318,7 @@ const todoItem = (() => {
         }
     }
     
-
+    
     document.addEventListener('DOMContentLoaded', function(){
         const ref = localStorage.getItem('todo');
         if (ref) {
@@ -302,14 +327,33 @@ const todoItem = (() => {
                 renderTodo(t);
             })
         }
-        const ref2 = localStorage.getItem('colors');
-        if(ref2) {
-            colorsObj = JSON.parse(ref2);
-            renderColor();
-        }
-    })
-
     
-});
+        const ref2 = localStorage.getItem('project-name');
+        if(ref2) {
+            projectName = JSON.parse(ref2);
+            console.log(projectName);
+            appTitle.textContent = projectName;
+            renderName();
+        }
+    
+    
+    })
+    
+    function renderName() {
+        projectName = appTitle.textContent;
+        firstProject.textContent = projectName;
+        localStorage.setItem('project-name', JSON.stringify(projectName));
+    }
+    
+    return {
+        renderName,
+        addTodo,
+        renderTodo,
+        deleteTodo,
+        submitClick,
+        toggleDone,
+        defaultCheck
+    }
+})();
 
-export default todoItem;
+export default todoItems;

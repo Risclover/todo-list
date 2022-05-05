@@ -27,36 +27,56 @@
     <link rel="stylesheet" href="https://unpkg.com/js-datepicker/dist/datepicker.min.css">
 </head>
 <body>
-    <header class='header'>
-        <h1 class='header-top'>Todo App</h1>
-    </header>
-    <main>
-        <nav>
-            <ul class="navigation">
-                <li>#1: <span id="first-project">Default</span></li>
+    <nav>
+        <div class="navigation">
+            <h1 class="header-top">Todo App</h1>
+            <ul id="top-nav">
                 <li>All</li>
                 <li>Today</li>
+                <li>This Week</li>
+                <li>Completed</li>
             </ul>
-        </nav>
-        <div class="todo-body">
+            <ul id="project-nav">
+                <li data-key="project-1">
+                    <div class="project-nav-name">#1: 
+                        <span id="first-project">Default</span>
+                        <input type="text" id="project-1-input" style='display: none;'>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="new-project">
+            <button id="new-project-btn">New List</button>
+        </div>
+    </nav>
+    <main>
+        <header class="header">
             <div class="project-name">
+                <div>
                 <h1 class="app-title">Default</h1>
-                <button id="default-icon"><i class="fa-solid fa-gear default-icon"></i></button>
+                <input type="text" id="new-title">
+                </div>
+                <div>
+                    <button id="project-menu"><i class="fa-solid fa-gear"></i></i></button>
+                </div>
             </div>
-            <div class="todo-content">
+            <div class="todo-input">
                 <div class="todo-input-box">
                     <input name="todo-input" placeholder="+ Add Task" type="text" id="todo-input">
                     <input type="hidden" id="saveIndex">
                     <button id="submit">Add Item</button>
                 </div>
-                <ul class="todo-list js-todo-list sortable"></ul>
             </div>
+        </header>
+        <div class="todo-content">
+            <ul class="todo-list js-todo-list sortable"></ul>
         </div>
     </main>
         
     <div id="dialog" style="display: none" title="Edit item">
+        <form class="dialog-form">
         <label for="todo-text">Title:</label>
-        <input name="todo-text" id="todo-text" type="text">
+        <input name="todo-text" id="todo-text" type="text" required>
         <label for="todo-priority">Priority:</label>
         <select id="todo-priority" name="todo-priority">
             <option selected disabled>Choose one</option>
@@ -71,23 +91,32 @@
         </div>
         <label>Notes:</label>
         <textarea id="todo-notes" value="" placeholder=""></textarea>
+        </form>
     </div>
 
     <div id="default" style="display: none" title="Edit list">
-        <label for="project-name">Title:</label>
-        <input name="project-name" id="project-name" type="text">
-        <label for="bg-color">Background color:</label>
-        <input type="color" id="bg-color" name="bg-color" value="#000000">
-        <label for="font-color">Font color:</label>
-        <input type="color" id="font-color" name="font-color">
-        <label for="header-font">Header font color:</label>
-        <input type="color" id="header-font" name="header-font">
-        <label for="header-bg">Header background color:</label>
-        <input type="color" id="header-bg" name="header-bg">
+        
     </div>
 
     <div id="default-check" style="display: none" title="Confirm Clear">
         Are you sure you want to erase all items in this list?
+    </div>
+
+    <div id="theme" style="display: none" title="Change Project Theme">
+        <div id="theme-container">
+            <div class="theme-box" id="theme-1"></div>
+            <div class="theme-box" id="theme-2"></div>
+            <div class="theme-box" id="theme-3"></div>
+            <div class="theme-box" id="theme-4"></div>
+            <div class="theme-box" id="theme-5"></div>
+            <div class="theme-box" id="theme-6"></div>
+            <div class="theme-box" id="theme-7"></div>
+            <div class="theme-box" id="theme-8"></div>
+            <div class="theme-box" id="theme-9"></div>
+            <div class="theme-box" id="theme-10"></div>
+            <div class="theme-box" id="theme-11"></div>
+            <div class="theme-box" id="theme-12"></div>
+        </div>
     </div>
 
     <script src="main.js"></script>
